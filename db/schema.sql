@@ -1,5 +1,5 @@
 
--- Active: 1723505854332@@127.0.0.1@5432@bookclub_db
+-- Active: 1723505728050@@127.0.0.1@5432@cars_db@public
 -- SQLBook: Code
 DROP DATABASE IF EXISTS bookclub_db;
 CREATE DATABASE bookclub_db;
