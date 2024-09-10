@@ -2,5 +2,21 @@
   { 
     "club_id": "1",
     "member_id":"1"
+},
+{ 
+    "club_id": "2",
+    "member_id":"1"
+},
+{ 
+    "club_id": "2",
+    "member_id":"2"
+},
+{ 
+    "club_id": "1",
+    "member_id":"3"
+},
+{ 
+    "club_id": "1",
+    "member_id":"4"
 }
 ]

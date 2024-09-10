@@ -13,6 +13,7 @@ Memberlist.init(
     },
     club_id: {
       type: DataTypes.INTEGER,
+      unique:false,
       allowNull: true,
       references: {
         model: 'club',
@@ -22,7 +23,7 @@ Memberlist.init(
     },
     member_id: {
       type: DataTypes.INTEGER,
-      unique: true,
+      unique: false,
       allowNull: true,
       references: {
         model: 'member',

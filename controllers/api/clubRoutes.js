@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Club, Memberlist, Member, Library } = require('../../models');
+const { Club, Memberlist, Member, Library, Book } = require('../../models');
 
 router.get('/', async (req, res) => {
   try {
@@ -27,12 +27,34 @@ router.get('/new', (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const club = await Club.findByPk(req.params.id);
-    const clubMembers = await Memberlist.findAll({
-      where: { club_id: club.id }
-    });
-    const clubBooks = await Library.findAll({
-      where: { club_id: club.id }
+    const club = await Club.findByPk(req.params.id, {
+      include: [
+        {
+          model: Member,
+          as: 'members',
+          attributes: ['name']
+        },
+        {
+          model: Member,
+          as: 'hostDetails',
+          attributes: ['name']
+        },
+        {
+          model: Book,
+          as: 'books_in_club',
+          through: {
+            attributes: [],
+          },
+        },
+      ],
+      include: [{
+        model: Member,
+        as: 'members'
+      },
+      {
+        model: Book,
+        as: 'books_in_club'
+      }]
     });
 
     if (!club) {
@@ -40,13 +62,29 @@ router.get('/:id', async (req, res) => {
       return;
     }
 
-    res.render('club', {
-      club,
-      clubMembers: clubMembers[0],
-      clubBooks: clubBooks[0]
+    const currentBook = club.books_in_club.length ? club.books_in_club[0] : null;
+
+    const isHost = club.host === req.session.memberId;
+
+    const isMember = await Memberlist.findOne({
+      where: {
+        club_id: req.params.id,
+        member_id: req.session.memberId
+      }
     });
-    console.log(clubMembers);
-    console.log('NEED club id', clubBooks);
+
+    res.render('club', {
+      club: club.toJSON(),
+      isMember: !!isMember,
+      clubMembers: club.members,
+      currentBook,
+      clubBooks: club.books_in_club,
+      isHost
+     });
+      clubMembers: club.members,
+      clubBooks: club.books_in_club
+    });
+
   } catch (err) {
     console.error('Error fetching club:', err);
     res.status(500).json(err);
@@ -60,21 +98,23 @@ router.post('/join/:clubId', async (req, res) => {
     const memberId = req.session.memberId;
 
     const existingEntry = await Memberlist.findOne({
-      where: { club_id: clubId, member_id: memberId }
+      where: {
+        club_id: clubId,
+        member_id: memberId
+      }
     });
 
     if (existingEntry) {
       return res.status(400).send('Member already in club');
     }
 
-    const join = await Memberlist.create({
-      club_id: clubId,
-      member_id: memberId
-    });
-    console.log(join);
+    await Memberlist.create({ club_id: clubId, member_id: memberId });
+
     res.json({ success: true, message: 'Successfully joined the club!' });
+
   } catch (error) {
     console.error('Error joining club:', error);
+
     res.status(500).send('Error joining club');
   }
 });
@@ -94,6 +134,41 @@ router.post('/new', async (req, res) => {
     res.status(500).send('Error creating club');
   }
 });
+
+router.post('/:id/setBook', async (req, res) => {
+  try {
+    const { bookName, authorName, genre, description } = req.body;
+
+    const club = await Club.findByPk(req.params.id);
+
+    if (club.host !== req.session.memberId) {
+      return res.status(403).json({
+        message: 'Only host can choose book.'
+      });
+    }
+
+    const [book, created] = await Book.findOrCreate({
+      where: { name: bookName},
+      defaults: {
+        author: authorName,
+        genre,
+        description,
+      }
+    });
+
+    await Library.create({
+      club_id: club.id,
+      book_id: book.id,
+    })
+
+    res.redirect(`/api/clubs/${club.id}`)
+  } catch (error) {
+    console.error("Error setting book:", error);
+    res.status(500).json({
+      message: 'Failed to set book'
+    });
+  }
+})
 
 // DELETE a club
 router.delete('/:id', async (req, res) => {

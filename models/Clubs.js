@@ -18,6 +18,10 @@ Club.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: false
+    },
+    discussionDate: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   },
   {

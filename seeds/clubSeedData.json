@@ -2,11 +2,13 @@
   {
     "name": "Spine Tinglers",
     "host": "1",
-    "description": "horror and thriller books"
+    "description": "horror and thriller books",
+    "discussionDate": "2024-11-01 16:30:00"
   },
   {
     "name": "Quick Reads",
     "host": "2",
-    "description": "books you could finish in one sitting"
+    "description": "books you could finish in one sitting",
+    "discussionDate": "2024-10-12 14:00:00"
   }
 ]
