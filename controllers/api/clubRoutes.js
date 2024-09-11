@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
             attributes: []
           }
         }
-      ],
+      ]
     });
 
     if (!club) {
