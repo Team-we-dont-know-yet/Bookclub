@@ -47,16 +47,6 @@ router.get('/:id', async (req, res) => {
           }
         }
       ],
-      include: [
-        {
-          model: Member,
-          as: 'members'
-        },
-        {
-          model: Book,
-          as: 'books_in_club'
-        }
-      ]
     });
 
     if (!club) {

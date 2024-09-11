@@ -1,30 +1,15 @@
 <div class="row">
   <div class="col-auto">
-    <h2>Welcome, {{memberName}}!</h2>
+    <h2>Welcome, {{member.name}}!</h2>
   </div>
 </div>
 
-<div class="row mt-4">
-  <div class="col-md-6">
-    <h3>Your Clubs</h3>
-
-
-  {{#if memberClubs.length}}
-  <div class="col-md-6 club-list">
-    <h3>Current:</h3>
-
-    {{#each memberClubs as |memberClub|}}
-    <div class="row mb-2">
-      <div class="col-md-8">
-        <h4><a href="/club/{{club.id}}">{{club.name}}</a></h4>
-      </div>
-      {{!-- <div class="col-md-4">
-        <button class="btn btn-sm btn-danger" data-id="{{project.id}}">DELETE</button>
-      </div> --}}
+  <div class="container mt-5">
+        <h2>your clubs:</h2>
+        <ul>
+            {{#each clubs}}
+                <a href='/api/clubs/{{this.id}}'>{{this.name}}</a>
+                <br></br>
+            {{/each}}
+        </ul>
     </div>
-    {{/each}}
-  </div>
-  {{/if}}
-</div>
-
-<script src="./js/member.js"></script>
