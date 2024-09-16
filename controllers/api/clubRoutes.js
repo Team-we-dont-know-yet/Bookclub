@@ -84,7 +84,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST route for allowing a user to join an existing club
 router.post('/join/:clubId', async (req, res) => {
   try {
     const { clubId } = req.params;
@@ -101,9 +100,14 @@ router.post('/join/:clubId', async (req, res) => {
       return res.status(400).send('Member already in club');
     }
 
-    await Memberlist.create({ club_id: clubId, member_id: memberId });
+    await Memberlist.create({ 
+      club_id: clubId, 
+      member_id: memberId 
+    });
 
-    res.json({ success: true, message: 'Successfully joined the club!' });
+    res.json({ 
+      success: true, 
+      message: 'Successfully joined the club!' });
 
   } catch (error) {
     console.error('Error joining club:', error);
@@ -112,26 +116,50 @@ router.post('/join/:clubId', async (req, res) => {
   }
 });
 
-router.post('/:id/discussion', async (req, res) => {
+// router.post('/:id/discussion', async (req, res) => {
+//   try {
+//     const club = await Club.findByPk(req.params.id);
+
+//     if (club.host !== req.session.memberId) {
+//       return res.status(403).json({
+//         message: 'Only the host can add a discussion date.',
+//       });
+//     }
+
+//     await club.update({
+//       discussionDate: req.body.date,
+//     })
+
+//     res.redirect(`/api/clubs/${req.params.id}`);
+//   } catch (error) {
+//     console.error('Error setting a discussion date:', error);
+//     res.status(500).json({
+//       message: 'Failed to set discussion date.'
+//     });
+//   }
+// });
+
+router.post('/:id/setDiscussionDate', async (req, res) => {
   try {
+    const { discussionDatetime } = req.body;
     const club = await Club.findByPk(req.params.id);
 
     if (club.host !== req.session.memberId) {
       return res.status(403).json({
-        message: 'Only the host can add a discussion date.',
+        message: 'You have to be host to set a Discussion date and time.'
       });
     }
 
     await club.update({
-      discussionDate: req.body.date,
-    })
-
-    res.redirect(`/api/clubs/${req.params.id}`);
-  } catch (error) {
-    console.error('Error setting a discussion date:', error);
-    res.status(500).json({
-      message: 'Failed to set discussion date.'
+      discussionDate: new Date(discussionDatetime)
     });
+
+    res.redirect(`/api/clubs/${club.id}`);
+  } catch (error) {
+    console.error('Error setting date and time:', error);
+    res.status(500).json({
+      message: 'Failed setting date and time.'
+    })
   }
 });
 
