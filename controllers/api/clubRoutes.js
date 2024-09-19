@@ -1,20 +1,22 @@
 const router = require('express').Router();
 const { Club, Memberlist, Member, Library, Book } = require('../../models');
+const withAuth = require('../../utils/auth')
 
-router.get('/', async (req, res) => {
-  try {
-    const clubData = await Club.findAll();
-
-    console.log('Clubs data:', clubData);
-
-    res.render('clubs', { clubs: clubData });
-  } catch (err) {
-    console.error('Error fetching clubs:', err);
-    res
-      .status(500)
-      .json({ message: 'Failed to fetch clubs', error: err.message });
-  }
-});
+router.get('/', withAuth, async (req, res) => {
+  
+    try {
+      const clubData = await Club.findAll();
+  
+      console.log('Clubs data:', clubData);
+  
+      res.render('clubs', { clubs: clubData });
+    } catch (err) {
+      console.error('Error fetching clubs:', err);
+      res
+        .status(500)
+        .json({ message: 'Failed to fetch clubs', error: err.message });
+    }
+  });
 
 router.get('/new', (req, res) => {
   try {

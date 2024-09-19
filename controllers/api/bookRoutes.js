@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET a single location
+// GET a single book
 router.get('/:id', async (req, res) => {
   try {
     const bookData = await Book.findByPk(req.params.id, {
