@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const { Club, Memberlist, Member, Library, Book } = require('../../models');
-const withAuth = require('../../utils/auth')
 
-router.get('/', withAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   
     try {
       const clubData = await Club.findAll();
